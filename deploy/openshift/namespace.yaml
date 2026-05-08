@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: openshift-module-freezer
+  labels:
+    app: module-freezer
+    openshift.io/cluster-monitoring: "true"
