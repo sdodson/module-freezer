@@ -23,5 +23,10 @@ supplementalGroups:
   type: RunAsAny
 volumes:
   - hostPath
+  - projected
+  - configMap
+  - downwardAPI
+  - emptyDir
+  - secret
 users:
   - system:serviceaccount:openshift-module-freezer:module-freezer

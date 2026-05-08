@@ -22,6 +22,7 @@ deploy-openshift:
 	oc apply -f deploy/clusterrole.yaml
 	oc apply -f deploy/openshift/clusterrolebinding.yaml
 	oc apply -f deploy/openshift/scc.yaml
+	oc apply -f deploy/openshift/scc-role.yaml
 	oc apply -f deploy/openshift/daemonset.yaml
 
 undeploy:
@@ -33,6 +34,7 @@ undeploy:
 
 undeploy-openshift:
 	oc delete -f deploy/openshift/daemonset.yaml --ignore-not-found
+	oc delete -f deploy/openshift/scc-role.yaml --ignore-not-found
 	oc delete -f deploy/openshift/clusterrolebinding.yaml --ignore-not-found
 	oc delete -f deploy/openshift/scc.yaml --ignore-not-found
 	oc delete -f deploy/openshift/serviceaccount.yaml --ignore-not-found
