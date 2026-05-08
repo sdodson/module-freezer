@@ -33,11 +33,11 @@ spec:
             - name: REMOVE_TAINT_ON_RESOLVE
               value: "false"
             - name: LOCK_MODULES
-              value: "false"
+              value: "true"
           volumeMounts:
             - name: proc
               mountPath: /host/proc
-              readOnly: true
+              readOnly: false
           resources:
             requests:
               cpu: 10m
@@ -45,11 +45,8 @@ spec:
             limits:
               memory: 64Mi
           securityContext:
-            readOnlyRootFilesystem: true
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-                - ALL
+            privileged: true
+            runAsUser: 0
       volumes:
         - name: proc
           hostPath:
