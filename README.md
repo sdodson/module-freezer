@@ -66,8 +66,45 @@ The agent requires a ClusterRole with:
 - `nodes`: `get`, `patch` (for reading node state and applying taints)
 - `events`: `create` (for creating warning events)
 
+## Enabling a New Module with LOCK_MODULES
+
+When `LOCK_MODULES=true`, the kernel rejects all module loads after the snapshot. To add a new module (e.g. `ice`), you must ensure it loads at boot before module-freezer starts.
+
+### OpenShift (MachineConfig)
+
+Create a MachineConfig to load the module via `systemd-modules-load`:
+
+```yaml
+apiVersion: machineconfiguration.openshift.io/v1
+kind: MachineConfig
+metadata:
+  name: 99-load-ice-driver
+  labels:
+    machineconfiguration.openshift.io/role: worker
+spec:
+  config:
+    ignition:
+      version: 3.2.0
+    storage:
+      files:
+        - path: /etc/modules-load.d/ice.conf
+          mode: 0644
+          contents:
+            source: data:,ice
+```
+
+The node will reboot as part of the MachineConfig rollout. On next boot, `ice` loads before any pods start, so module-freezer includes it in the approved snapshot.
+
+### Generic Kubernetes
+
+Add the module name to `/etc/modules-load.d/<module>.conf` on the node and reboot:
+
+```bash
+echo "ice" | sudo tee /etc/modules-load.d/ice.conf
+sudo reboot
+```
+
 ## Security Notes
 
-- The container mounts `/proc` from the host as read-only
-- Runs as non-root (UBI9 default UID 1001)
-- `LOCK_MODULES=true` is a **one-way lock** — once set, no kernel modules can be loaded until the node is rebooted. Use with caution.
+- When `LOCK_MODULES=false` (default for generic Kubernetes): the container mounts `/proc` read-only, runs as non-root (UID 1001), and drops all capabilities
+- When `LOCK_MODULES=true` (OpenShift default): the container runs privileged as root to write to `/proc/sys/kernel/modules_disabled`. This is a **one-way kernel lock** — no modules can be loaded until the node is rebooted. Use with caution.
