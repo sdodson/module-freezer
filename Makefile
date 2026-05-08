@@ -1,4 +1,4 @@
-IMAGE ?= quay.io/module-freezer/module-freezer
+IMAGE ?= quay.io/sdodsonrht/module-freezer
 TAG ?= latest
 
 .PHONY: build push deploy deploy-openshift clean

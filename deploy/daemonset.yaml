@@ -20,7 +20,7 @@ spec:
         - operator: Exists
       containers:
         - name: module-freezer
-          image: quay.io/module-freezer/module-freezer:latest
+          image: quay.io/sdodsonrht/module-freezer:latest
           env:
             - name: NODE_NAME
               valueFrom:
